@@ -130,3 +130,6 @@ dmypy.json
 
 # data
 data/
+
+# ignore the jupyter notebooks as well
+*.ipynb
