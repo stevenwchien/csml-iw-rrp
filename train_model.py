@@ -72,15 +72,18 @@ def train(model, device, train_dataloader, optimizer, scheduler):
     return avg_train_loss
 
 #==================== EVALUATE METHOD ====================#
-def evaluate(model, device, dataloader):
+def evaluate(model, device, dataloader, test_size):
     model.eval()
 
     # Tracking variables
     total_eval_accuracy = 0
     total_eval_loss = 0
     nb_eval_steps = 0
+    pred_labels = np.empty(test_size)
+    actual_labels = np.empty(test_size)
 
     # Evaluate data for one epoch
+    count = 0
     for batch in tqdm(dataloader):
 
         # Unpack this training batch from our dataloader.
@@ -109,11 +112,16 @@ def evaluate(model, device, dataloader):
         # accumulate it over all batches.
         total_eval_accuracy += acc(logits, label_ids)
 
+        # accumulate the prediction labels to return
+        pred_labels[count*dataloader.batch_size:(count+1)*dataloader.batch_size] = np.argmax(logits, axis=1).flatten()
+        actual_labels[count*dataloader.batch_size:(count+1)*dataloader.batch_size] = label_ids.flatten()
+        count += 1
+
     # Report the final accuracy for this validation run.
     avg_val_accuracy = total_eval_accuracy / len(dataloader)
     avg_val_loss = total_eval_loss / len(dataloader)
 
-    return avg_val_loss, avg_val_accuracy
+    return avg_val_loss, avg_val_accuracy, pred_labels, actual_labels
 
 #==================== START MAIN METHOD ====================#
 def main():
@@ -145,15 +153,22 @@ def main():
     type=float,
     help='train size - default: 0.85')
 
+    parser.add_argument('--epochs',
+    default=4,
+    type=int,
+    help='number of training epochs - default: 4')
+
     clargs = parser.parse_args()
 
+    print("")
     print("==========================================")
     print("-------------Confirm Arguments------------")
     print("==========================================")
 
-    print("Batch size of {0:3d}".format(clargs.batch_size))
-    print("Dataset size of {0:3d}".format(clargs.dataset_size))
-    print("Train ratio of {0:3.2f}".format(clargs.train_ratio))
+    print("Batch size of {0:d}".format(clargs.batch_size))
+    print("Dataset size of {0:d}".format(clargs.dataset_size))
+    print("Train ratio of {0:0.2f}".format(clargs.train_ratio))
+    print("Train for {0:d} epoch".format(clargs.epochs))
     print("Data directory: {0:s}".format(clargs.data_dir))
     print("Reviews File: {0:s}".format(clargs.review))
 
@@ -169,6 +184,7 @@ def main():
         print('*No GPU available, using the CPU instead.')
         device = torch.device("cpu")
 
+    print("")
     print("==========================================")
     print("---------------Process Data---------------")
     print("==========================================")
@@ -181,7 +197,7 @@ def main():
     path = clargs.data_dir
     fn = clargs.review # remember you must include json
     filename = path + "/" + fn
-    json_reader = pd.read_json(filename, lines=True, chunksize=1000)
+    json_reader = pd.read_json(filename, lines=True, chunksize=clargs.batch_size)
 
     # read in data from review dataset
     print("Generating dataset of size: {0:6d}".format(clargs.dataset_size))
@@ -227,7 +243,7 @@ def main():
 
     # Total number of training steps is [number of batches] x [number of epochs].
     # (Note that this is not the same as the number of training samples).
-    epochs = 4
+    epochs = clargs.epochs
     total_steps = len(train_dataloader) * epochs
 
     # Create the learning rate scheduler.
@@ -238,11 +254,12 @@ def main():
     val_losses = []
     val_accs = []
 
+    print("")
     print("==========================================")
     print("-------------Starting training------------")
     print("==========================================")
 
-    # TRAINING LOOP: We will train for 4 epochs
+    # TRAINING LOOP:
     # - epoch: number of times through the entire dataset
     # - consists of a training portion: forward pass, then backward pass
     # - followed by a validation portion: evaluate model on a validation set
@@ -259,7 +276,7 @@ def main():
 
         # then validate
         print("Epoch {0:d} Validation Phase".format(i+1))
-        val_loss, val_acc = evaluate(model, device, validation_dataloader)
+        val_loss, val_acc, _, _ = evaluate(model, device, validation_dataloader, VAL_SIZE)
         print("  Validation Accuracy: {0:.2f}".format(val_acc))
         print("  Validation Loss: {0:.2f}".format(val_loss))
         val_losses.append(val_loss)
@@ -295,7 +312,6 @@ def main():
     model_to_save.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
     print("Finished saving model")
-
 
 if __name__ == '__main__':
     main()
