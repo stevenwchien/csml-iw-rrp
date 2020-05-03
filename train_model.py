@@ -1,6 +1,8 @@
 import torch
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
+from tabulate import tabulate
 
 from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
 from transformers import AdamW, get_linear_schedule_with_warmup
@@ -8,7 +10,6 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 from data_util import generate_dataframe, extract_features, train_val_split
 
 import time
-from tqdm import tqdm
 import argparse
 import os
 
@@ -18,16 +19,16 @@ def acc(preds, labels):
     labels_flat = labels.flatten()
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
-#==================== EVALUATE METHOD ====================#
+#======================= TRAIN METHOD =======================#
 def train(model, device, train_dataloader, optimizer, scheduler):
     t0 = time.perf_counter()
     total_train_loss = 0
     for step, batch in tqdm(enumerate(train_dataloader)):
         # Progress update every n batches.
-        if step % 10 == 0 and not step == 0:
+        if step % 5 == 0 and not step == 0:
             # Report progress.
             elapsed = time.perf_counter() - t0
-            print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(train_dataloader), elapsed))
+            print('  Batch {0:5d}  of  {1:5d}. Elapsed: {2:0.2f}.'.format(step, len(train_dataloader), elapsed))
 
         # As we unpack the batch, we'll also copy each tensor to the GPU using the
         # `to` method.
@@ -80,7 +81,7 @@ def evaluate(model, device, dataloader):
     nb_eval_steps = 0
 
     # Evaluate data for one epoch
-    for batch in dataloader:
+    for batch in tqdm(dataloader):
 
         # Unpack this training batch from our dataloader.
         b_input_ids = batch[0].to(device)
@@ -125,7 +126,7 @@ def main():
     help='path to data directory - default: \'data\'')
 
     parser.add_argument('--review',
-    default='yelp_academic_dataset_review.json',
+    default='yelp_reviews_train.json',
     type=str,
     help='file name containig reviews')
 
@@ -135,14 +136,14 @@ def main():
     help='batch size - default: 32')
 
     parser.add_argument('--dataset_size',
-    default=1000,
+    default=10000,
     type=int,
-    help='train size - default: 1000')
+    help='train size - default: 10000')
 
     parser.add_argument('--train_ratio',
-    default=0.8,
+    default=0.85,
     type=float,
-    help='train size - default: 0.9')
+    help='train size - default: 0.85')
 
     clargs = parser.parse_args()
 
@@ -186,7 +187,7 @@ def main():
     print("Generating dataset of size: {0:6d}".format(clargs.dataset_size))
     data_df = generate_dataframe(json_reader, nrows=clargs.dataset_size)
     elapsed = time.perf_counter() - t0
-    print("Generated a dataset of size: {0:6d} | Took {1:7.2f} seconds".format(len(data_df), elapsed))
+    print("Generated a dataset of size: {0:6d} | Took {1:0.2f} seconds".format(len(data_df), elapsed))
 
     t1 = time.perf_counter()
 
@@ -198,7 +199,7 @@ def main():
     dataset = extract_features(data_df, tokenizer)
 
     elapsed = time.perf_counter() - t1
-    print("Finished tokenizing | Took {0:7.2f} seconds".format(elapsed))
+    print("Finished tokenizing | Took {0:0.2f} seconds".format(elapsed))
 
     t2 = time.perf_counter()
 
@@ -209,7 +210,7 @@ def main():
     elapsed = time.perf_counter() - t2
     print("Training - Split {0:d} examples into {1:d} batches".format(TRAIN_SIZE, len(train_dataloader)))
     print("Validation - Split {0:d} examples into {1:d} batches".format(VAL_SIZE, len(validation_dataloader)))
-    print("Finished splitting | Took {0:7.2f} seconds".format(elapsed))
+    print("Finished splitting | Took {0:0.2f} seconds".format(elapsed))
 
     # load a pre-trained model
     model = BertForSequenceClassification.from_pretrained('bert-base-uncased',
@@ -245,6 +246,7 @@ def main():
     # - epoch: number of times through the entire dataset
     # - consists of a training portion: forward pass, then backward pass
     # - followed by a validation portion: evaluate model on a validation set
+    start_train_time = time.perf_counter()
     for i in range(epochs):
         print("-----------------Epoch {0:d}-----------------".format(i+1))
         print("Epoch {0:d} Training Phase".format(i+1))
@@ -264,10 +266,19 @@ def main():
         val_accs.append(val_acc)
         print("")
 
+        elapsed_time = time.perf_counter() - start_train_time
+        print("Epoch {0:d} - Elapsed time so far {1:0.2f} seconds".format((i+1), elapsed_time))
+        print("")
+
 
     print("==========================================")
     print("-------------Finished training------------")
     print("==========================================")
+    total_elapsed_time = time.perf_counter() - start_train_time
+    print("Total training time: {0:0.2f}".format(total_elapsed_time))
+    print("")
+    print(tabulate(np.stack((train_losses, val_losses, val_accs),axis=-1), ["train_loss", "val_loss", "val_acc"]))
+    print("")
 
     # save model
     # Saving best-practices: if you use defaults names for the model, you can reload it using from_pretrained()

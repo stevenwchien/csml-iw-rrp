@@ -5,12 +5,12 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch.utils.data import RandomSampler, SequentialSampler, random_split
 import torch
 
-# generate data with equal distribution of ratings, of specified length
-def generate_dataframe(json_reader, nrows, min_length=70, max_length = 120):
+# generate data with equal distribution of ratings, of maximum length
+def generate_dataframe(json_reader, nrows, max_length = 100):
     df = None
     while True:
         df_candidate = next(json_reader)
-        df_candidate = df_candidate.loc[(df_candidate['text'].str.len() > min_length) & (df_candidate['text'].str.len() <= max_length), ['text', 'stars']]
+        df_candidate = df_candidate.loc[df_candidate['text'].str.split().str.len() <= max_length, ['text', 'stars']]
         if df is None:
             df = df_candidate
         else:
@@ -34,7 +34,7 @@ def extract_features(df, tokenizer):
         encoded_dict = tokenizer.encode_plus(
                         text,                      # text to encode.
                         add_special_tokens = True, # Add '[CLS]' and '[SEP]'
-                        max_length = 130,          # Pad & truncate all text.
+                        max_length = 120,          # Pad & truncate all text.
                         pad_to_max_length = True,
                         return_attention_mask = True,   # Construct attn. masks.
                         return_tensors = 'pt',     # Return pytorch tensors.
