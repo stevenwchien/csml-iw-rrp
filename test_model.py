@@ -44,6 +44,7 @@ def main():
     print("Data directory for test data: {0:s}".format(clargs.data_dir))
     print("Test reviews file: {0:s}".format(clargs.review))
 
+    # TODO: should generate some files that are equal size, so we can standardize the results
     # generate some test data
     print("==========================================")
     print("---------------Generate Data--------------")
