@@ -1,0 +1,290 @@
+import torch
+import pandas as pd
+import numpy as np
+
+from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
+from transformers import AdamW, get_linear_schedule_with_warmup
+
+from data_util import generate_dataframe, extract_features, train_val_split
+
+import time
+from tqdm import tqdm
+import argparse
+import os
+
+# helper function - calculate accuracy
+def acc(preds, labels):
+    pred_flat = np.argmax(preds, axis=1).flatten()
+    labels_flat = labels.flatten()
+    return np.sum(pred_flat == labels_flat) / len(labels_flat)
+
+#==================== EVALUATE METHOD ====================#
+def train(model, device, train_dataloader, optimizer, scheduler):
+    t0 = time.perf_counter()
+    total_train_loss = 0
+    for step, batch in tqdm(enumerate(train_dataloader)):
+        # Progress update every n batches.
+        if step % 10 == 0 and not step == 0:
+            # Report progress.
+            elapsed = time.perf_counter() - t0
+            print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(train_dataloader), elapsed))
+
+        # As we unpack the batch, we'll also copy each tensor to the GPU using the
+        # `to` method.
+        #
+        # `batch` contains three pytorch tensors:
+        #   [0]: input ids
+        #   [1]: attention masks
+        #   [2]: labels
+        b_input_ids = batch[0].to(device)
+        b_input_mask = batch[1].to(device)
+        b_labels = batch[2].to(device)
+
+        # clear gradients
+        model.zero_grad()
+
+        # Perform a forward pass (evaluate the model on this training batch).
+        loss, logits = model(b_input_ids,
+                             token_type_ids=None,
+                             attention_mask=b_input_mask,
+                             labels=b_labels)
+
+        # Accumulate the training loss over all of the batches so that we can
+        # calculate the average loss at the end
+        total_train_loss += loss.item()
+
+        # Perform a backward pass to calculate the gradients.
+        loss.backward()
+
+        # Clip the norm of the gradients to 1.0.
+        # This is to help prevent the "exploding gradients" problem.
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+
+        # Update parameters and take a step using the computed gradient.
+        optimizer.step()
+
+        # Update the learning rate.
+        scheduler.step()
+
+    # Calculate the average loss over all of the batches.
+    avg_train_loss = total_train_loss / len(train_dataloader)
+    return avg_train_loss
+
+#==================== EVALUATE METHOD ====================#
+def evaluate(model, device, dataloader):
+    model.eval()
+
+    # Tracking variables
+    total_eval_accuracy = 0
+    total_eval_loss = 0
+    nb_eval_steps = 0
+
+    # Evaluate data for one epoch
+    for batch in dataloader:
+
+        # Unpack this training batch from our dataloader.
+        b_input_ids = batch[0].to(device)
+        b_input_mask = batch[1].to(device)
+        b_labels = batch[2].to(device)
+
+        # Tell pytorch not to bother with constructing the compute graph during
+        # the forward pass, since this is only needed for backprop (training).
+        with torch.no_grad():
+
+            # Forward pass, calculate logit predictions.
+            (loss, logits) = model(b_input_ids,
+                                   token_type_ids=None,
+                                   attention_mask=b_input_mask,
+                                   labels=b_labels)
+
+        # Accumulate the validation loss.
+        total_eval_loss += loss.item()
+
+        # Move logits and labels to CPU
+        logits = logits.detach().cpu().numpy()
+        label_ids = b_labels.to('cpu').numpy()
+
+        # Calculate the accuracy for this batch of test sentences, and
+        # accumulate it over all batches.
+        total_eval_accuracy += acc(logits, label_ids)
+
+    # Report the final accuracy for this validation run.
+    avg_val_accuracy = total_eval_accuracy / len(dataloader)
+    avg_val_loss = total_eval_loss / len(dataloader)
+
+    return avg_val_loss, avg_val_accuracy
+
+#==================== START MAIN METHOD ====================#
+def main():
+    # parse input arguments
+    parser = argparse.ArgumentParser(description='argument parsing for training')
+
+    parser.add_argument('--data_dir',
+    default='data',
+    type=str,
+    help='path to data directory - default: \'data\'')
+
+    parser.add_argument('--review',
+    default='yelp_academic_dataset_review.json',
+    type=str,
+    help='file name containig reviews')
+
+    parser.add_argument('--batch_size',
+    default=32,
+    type=int,
+    help='batch size - default: 32')
+
+    parser.add_argument('--dataset_size',
+    default=1000,
+    type=int,
+    help='train size - default: 1000')
+
+    parser.add_argument('--train_ratio',
+    default=0.8,
+    type=float,
+    help='train size - default: 0.9')
+
+    clargs = parser.parse_args()
+
+    print("==========================================")
+    print("-------------Confirm Arguments------------")
+    print("==========================================")
+
+    print("Batch size of {0:3d}".format(clargs.batch_size))
+    print("Dataset size of {0:3d}".format(clargs.dataset_size))
+    print("Train ratio of {0:3.2f}".format(clargs.train_ratio))
+    print("Data directory: {0:s}".format(clargs.data_dir))
+    print("Reviews File: {0:s}".format(clargs.review))
+
+    # Check to see if GPU is available
+    CUDA_FLAG = False
+    if torch.cuda.is_available():
+        CUDA_FLAG = True
+        device = torch.device("cuda")
+        print('*We will use the GPU:', torch.cuda.get_device_name(0))
+
+    else:
+        CUDA_FLAG = False
+        print('*No GPU available, using the CPU instead.')
+        device = torch.device("cpu")
+
+    print("==========================================")
+    print("---------------Process Data---------------")
+    print("==========================================")
+
+    t0 = time.perf_counter()
+
+    TRAIN_SIZE = int(clargs.dataset_size * clargs.train_ratio)
+    VAL_SIZE = clargs.dataset_size - TRAIN_SIZE
+    BATCH_SIZE = clargs.batch_size
+    path = clargs.data_dir
+    fn = clargs.review # remember you must include json
+    filename = path + "/" + fn
+    json_reader = pd.read_json(filename, lines=True, chunksize=1000)
+
+    # read in data from review dataset
+    print("Generating dataset of size: {0:6d}".format(clargs.dataset_size))
+    data_df = generate_dataframe(json_reader, nrows=clargs.dataset_size)
+    elapsed = time.perf_counter() - t0
+    print("Generated a dataset of size: {0:6d} | Took {1:7.2f} seconds".format(len(data_df), elapsed))
+
+    t1 = time.perf_counter()
+
+    # create tokenizer and model from transformers
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+    # tokenize the data into something that BERT can use, then split
+    print("Tokenizing and encoding data to be fed into BERT model")
+    dataset = extract_features(data_df, tokenizer)
+
+    elapsed = time.perf_counter() - t1
+    print("Finished tokenizing | Took {0:7.2f} seconds".format(elapsed))
+
+    t2 = time.perf_counter()
+
+    train_dataloader, validation_dataloader = train_val_split(dataset=dataset,
+                                                              batch_sz=BATCH_SIZE,
+                                                              lengths=[TRAIN_SIZE, VAL_SIZE])
+
+    elapsed = time.perf_counter() - t2
+    print("Training - Split {0:d} examples into {1:d} batches".format(TRAIN_SIZE, len(train_dataloader)))
+    print("Validation - Split {0:d} examples into {1:d} batches".format(VAL_SIZE, len(validation_dataloader)))
+    print("Finished splitting | Took {0:7.2f} seconds".format(elapsed))
+
+    # load a pre-trained model
+    model = BertForSequenceClassification.from_pretrained('bert-base-uncased',
+                                                          num_labels = 5,
+                                                          output_attentions = False,
+                                                          output_hidden_states = False)
+    if CUDA_FLAG:
+        model.cuda()
+
+    optimizer = AdamW(model.parameters(),
+                  lr = 2e-5, # args.learning_rate - default is 5e-5,
+                  eps = 1e-8 # args.adam_epsilon  - default is 1e-8.
+                )
+
+    # Total number of training steps is [number of batches] x [number of epochs].
+    # (Note that this is not the same as the number of training samples).
+    epochs = 4
+    total_steps = len(train_dataloader) * epochs
+
+    # Create the learning rate scheduler.
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps = 0, num_training_steps = total_steps)
+
+    # Training statistics:
+    train_losses = []
+    val_losses = []
+    val_accs = []
+
+    print("==========================================")
+    print("-------------Starting training------------")
+    print("==========================================")
+
+    # TRAINING LOOP: We will train for 4 epochs
+    # - epoch: number of times through the entire dataset
+    # - consists of a training portion: forward pass, then backward pass
+    # - followed by a validation portion: evaluate model on a validation set
+    for i in range(epochs):
+        print("-----------------Epoch {0:d}-----------------".format(i+1))
+        print("Epoch {0:d} Training Phase".format(i+1))
+        # first train
+        model.train() # only to put the model into train mode
+        train_loss = train(model, device, train_dataloader, optimizer, scheduler)
+        print("  Training Loss: {0:.2f}".format(train_loss))
+        train_losses.append(train_loss)
+        print("")
+
+        # then validate
+        print("Epoch {0:d} Validation Phase".format(i+1))
+        val_loss, val_acc = evaluate(model, device, validation_dataloader)
+        print("  Validation Accuracy: {0:.2f}".format(val_acc))
+        print("  Validation Loss: {0:.2f}".format(val_loss))
+        val_losses.append(val_loss)
+        val_accs.append(val_acc)
+        print("")
+
+
+    print("==========================================")
+    print("-------------Finished training------------")
+    print("==========================================")
+
+    # save model
+    # Saving best-practices: if you use defaults names for the model, you can reload it using from_pretrained()
+    output_dir = './model_save/'
+
+    # Create output directory if needed
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    print("Saving model to %s" % output_dir)
+    # Save a trained model, configuration and tokenizer using `save_pretrained()`.
+    # They can then be reloaded using `from_pretrained()`
+    model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
+    model_to_save.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
+    print("Finished saving model")
+
+
+if __name__ == '__main__':
+    main()
