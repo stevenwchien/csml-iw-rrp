@@ -128,8 +128,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# data
-data/
+#
 
-# ignore the jupyter notebooks as well
+# data/model
+data/
+model_save/
+
+# my scratch files
 *.ipynb
+unit_test.py
