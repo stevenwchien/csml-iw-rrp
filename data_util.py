@@ -10,7 +10,7 @@ def generate_dataframe(json_reader, nrows, max_length = 120):
     df = None
     while True:
         df_candidate = next(json_reader)
-        df_candidate = df_candidate.loc[df_candidate['text'].str.split().str.len() <= max_length, ['text', 'stars']]
+        df_candidate = df_candidate.loc[df_candidate['text'].str.split().str.len() <= max_length, ['review_id','text','stars']]
         if df is None:
             df = df_candidate
         else:
@@ -24,7 +24,7 @@ def generate_dataframe(json_reader, nrows, max_length = 120):
                     if len(df) == nrows:
                         return df
 
-# check to see if we need to specify stars and ratings as the columns with which we are interested
+# extract tokenized versions of the text
 def extract_features(df, tokenizer):
     input_ids = []
     attention_masks = []
