@@ -5,7 +5,7 @@ for csml independent work project
 
 This project makes use of datasets that are derived from the Yelp Open Dataset. Information about the Yelp Open Dataset can be found at: https://www.yelp.com/dataset.
 
-Because the dataset is extremely large, we decide to create our own smaller datasets, which we describe below.
+Because the dataset is extremely large, we decided to create our own smaller datasets from the larger one. We specifically focus our work using the file: yelp_academic_dataset_reviews.json.
 
 ### yelp_reviews_test1000.json
 
@@ -21,4 +21,14 @@ Running train_model.py and test_model.py will print to both stdout and to a log 
 
 The testing file will include elapsed time and various measures of accuracy, including just a straight up accuracy, mean absolute distance, and confusion matrix.
 
-## Training
+## Dependencies
+
+The dependencies for this project are listed in requirements.txt. Development was done on a MAC OSX. However, testing was done on a Linux OS - Ubuntu LTS 16.04. This was running as a VM on a Google Cloud Compute instance with a Tesla K80 GPU attached.
+
+Note: The code was tested with the following package versions:
+
+python 3.7
+transformers
+pytorch
+numpy
+pandas
