@@ -19,9 +19,9 @@ Note: The code was tested with the following python/package versions:
 
 This project makes use of datasets that are derived from the Yelp Open Dataset. Information about the Yelp Open Dataset can be found at: https://www.yelp.com/dataset. Because both the Yelp Dataset and are derived dataset are relatively large, we do not include them in this repository. Instead, we include the scripts that were used to create them. All that is needed to run these scripts are the datasets downloaded from Yelp's website with their generic names.
 
-Because the dataset is extremely large, we decided to create our own smaller datasets from the larger one. For our project, the most useful dataset to us is the reviews dataset: **yelp_academic_dataset_review.json**. To begin with our processing, we combine this data with the file: **yelp_academic_dataset_business.json** in order to extract just the reviews about restaurants. The script that creates this new csv document with only restaurant reviews can be run using the following command:
+Because the dataset is extremely large, we decided to create our own smaller datasets from the larger one. For our project, the most useful dataset to us is the reviews dataset: **yelp_academic_dataset_review.json**. To begin with our processing, we combine this data with the file: **yelp_academic_dataset_business.json** in order to extract just the reviews about restaurants. The script that creates this new csv document with only restaurant reviews is [restaurant_review_script.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/restaurant_review_script.py). Run using:
 
-`python3 [restaurant_review_script.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/restaurant_review_script.py)`
+`python3 restaurant_review_script.py`
 
 After doing this, analyzed the data further to decide how to distill it to create our training and test sets. For more details, please refer to the file
 
