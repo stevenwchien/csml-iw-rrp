@@ -132,9 +132,10 @@ dmypy.json
 
 #
 
-# data/model
+# data/model/logs
 data/
 model_save/
+logs/
 
 # my scratch files
 *.ipynb

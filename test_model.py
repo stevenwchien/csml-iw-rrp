@@ -3,15 +3,16 @@ import torch
 import numpy as np
 import pandas as pd
 from torch.utils.data import SequentialSampler, DataLoader
+from logger import Logger
 
 from train_model import evaluate
 from data_util import generate_dataframe, extract_features
 
 import argparse
 import time
+import sys
 
 def main():
-    # parse input arguments
     parser = argparse.ArgumentParser(description='argument parsing for testing')
 
     parser.add_argument('--data_dir',
@@ -34,7 +35,17 @@ def main():
     type=int,
     help='test set size - default: 1000')
 
+    parser.add_argument('--model_save',
+    default='./model_save/',
+    type=str,
+    help='directory to pull model')
+
+    # parse input arguments
     clargs = parser.parse_args()
+
+    # log to output file
+    sys.stdout = Logger('test')
+
     print("")
     print("==========================================")
     print("-------------Confirm Arguments------------")
@@ -44,6 +55,7 @@ def main():
     print("Dataset size of {0:d}".format(clargs.test_size))
     print("Data directory for test data: {0:s}".format(clargs.data_dir))
     print("Test reviews file: {0:s}".format(clargs.review))
+    print("Loading model from: {0:s}".format(clargs.model_save))
 
     # TODO: should generate some files that are equal size, so we can standardize the results
     # generate some test data
@@ -71,7 +83,7 @@ def main():
     print("==========================================")
 
     print("Loading model and tokenizer from directory")
-    model_path = './model_save/'
+    model_path = clargs.model_save
     tokenizer = BertTokenizer.from_pretrained(model_path)
     model = BertForSequenceClassification.from_pretrained(model_path)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
