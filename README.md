@@ -11,7 +11,7 @@ Note: The code was tested with the following python/package versions:
 - numpy 1.18.3
 - pandas 1.0.3
 - [torch](https://github.com/pytorch/pytorch) 1.5.0
-- transformers 2.8.0
+- [transformers](https://github.com/huggingface/transformers) 2.8.0
 - tqdm 4.46.0
 - tabulate 0.8.7
 
