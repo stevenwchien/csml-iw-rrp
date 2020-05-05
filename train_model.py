@@ -96,8 +96,7 @@ def evaluate(model, device, dataloader, test_size):
         total_eval_loss += loss.item()
 
     # Report the final accuracy for this validation run.
-    total_eval_accuracy = acc(pred_labels, actual_labels)
-    avg_val_accuracy = total_eval_accuracy / len(dataloader)
+    avg_val_accuracy = acc(pred_labels, actual_labels)
     avg_val_loss = total_eval_loss / len(dataloader)
 
     return avg_val_loss, avg_val_accuracy, pred_labels, actual_labels
