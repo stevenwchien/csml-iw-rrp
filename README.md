@@ -19,6 +19,6 @@ This is a test dataset with 10000 reviews. For each star rating, there are 200 r
 
 Running train_model.py and test_model.py will print to both stdout and to a log file. The file name will indicate whether the run is for training the model or testing the model. The information in the training file will include elapsed run time, hyperparameters, and validation loss and accuracy.
 
-The testing file will include elapsed time and various measures of accuracy, including just a straight up accuracy, mean average distance, and confusion matrix.
+The testing file will include elapsed time and various measures of accuracy, including just a straight up accuracy, mean absolute distance, and confusion matrix.
 
 ## Training
