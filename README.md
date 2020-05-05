@@ -7,13 +7,13 @@ This project makes use of datasets that are derived from the Yelp Open Dataset. 
 
 Because the dataset is extremely large, we decide to create our own smaller datasets, which we describe below.
 
-###yelp_reviews_test1000.json
+### yelp_reviews_test1000.json
 
-This file has 1000 reviews, with an equal distribution of star ratings. There are 200 of each star rating.
+This is a test dataset with 1000 reviews. For each star rating, there are 200 reviews.
 
-###yelp_reviews_test10000.json
+### yelp_reviews_test10000.json
 
-This file has 10000 reviews. There are 2000 of each star rating.
+This is a test dataset with 10000 reviews. For each star rating, there are 200 reviews.
 
 ## Logging
 
