@@ -54,7 +54,7 @@ def train(model, device, train_dataloader, optimizer, scheduler):
 
 # helper function - calculate accuracy by comparing predicted labels to actual labels
 def acc(preds, labels):
-    return np.sum(pred_flat == labels_flat) / len(labels_flat)
+    return np.sum(preds == labels) / len(labels)
 
 #==================== EVALUATE METHOD ====================#
 def evaluate(model, device, dataloader, test_size):
