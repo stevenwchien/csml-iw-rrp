@@ -5,8 +5,8 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch.utils.data import RandomSampler, SequentialSampler, random_split
 import torch
 
-# generate data with equal distribution of ratings, of maximum length
-def generate_dataframe(json_reader, nrows, max_length = 100):
+# generates a dataframe with reviews under a certain length
+def generate_dataframe(json_reader, nrows, max_length = 120):
     df = None
     while True:
         df_candidate = next(json_reader)
@@ -30,26 +30,25 @@ def extract_features(df, tokenizer):
     attention_masks = []
 
     for text in tqdm(df['text']):
-        # encode_plus can both tokenize and create the attention masks for us
+        # encode_plus can both tokenize, pad to length, and return attention mask
         encoded_dict = tokenizer.encode_plus(
-                        text,                      # text to encode.
-                        add_special_tokens = True, # Add '[CLS]' and '[SEP]'
-                        max_length = 120,          # Pad & truncate all text.
+                        text,
+                        add_special_tokens = True,
+                        max_length = 120,
                         pad_to_max_length = True,
-                        return_attention_mask = True,   # Construct attn. masks.
-                        return_tensors = 'pt',     # Return pytorch tensors.
-                    )
+                        return_attention_mask = True,
+                        return_tensors = 'pt',
+                        )
 
-        # Add the encoded text to the list.
         input_ids.append(encoded_dict['input_ids'])
-
-        # And its attention mask (simply differentiates padding from non-padding).
         attention_masks.append(encoded_dict['attention_mask'])
 
     # Convert the lists into tensors.
     input_ids = torch.cat(input_ids, dim=0)
     attention_masks = torch.cat(attention_masks, dim=0)
-    labels_array = df['stars'].to_numpy() - 1 # for class
+
+    # we have to subtract 1 here to turn the star ratings into class labels
+    labels_array = df['stars'].to_numpy() - 1
     labels = torch.tensor(labels_array)
 
     # return a TensorDataset
