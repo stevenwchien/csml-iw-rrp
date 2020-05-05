@@ -22,7 +22,7 @@ def train(model, device, train_dataloader, optimizer, scheduler):
     for step, batch in tqdm(enumerate(train_dataloader)):
 
         # Progress update every n batches.
-        if step % 5 == 0 and not step == 0:
+        if step % 10 == 0 and not step == 0:
             elapsed = time.perf_counter() - t0
             m,s = divmod(elapsed, 60)
             print('  Batch {0:4d}  of  {1:4d}. Epoch elapsed: {2:02d}:{3:02.2f}'.format(step, len(train_dataloader), int(m), s))
@@ -155,7 +155,7 @@ def main():
     print("Batch size of {0:d}".format(clargs.batch_size))
     print("Dataset size of {0:d}".format(clargs.dataset_size))
     print("Train ratio of {0:0.2f}".format(clargs.train_ratio))
-    print("Train for {0:d} epoch".format(clargs.epochs))
+    print("Train for {0:d} epochs".format(clargs.epochs))
     print("Data directory: {0:s}".format(clargs.data_dir))
     print("Reviews file: {0:s}".format(clargs.review))
     print("Will save model in: {0:s}".format(clargs.model_save))
