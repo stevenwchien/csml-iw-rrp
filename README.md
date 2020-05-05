@@ -21,7 +21,9 @@ This project makes use of datasets that are derived from the Yelp Open Dataset. 
 
 Because the dataset is extremely large, we decided to create our own smaller datasets from the larger one. For our project, the most useful dataset to us is the reviews dataset: **yelp_academic_dataset_review.json**. To begin with our processing, we combine this data with the file: **yelp_academic_dataset_business.json** in order to extract just the reviews about restaurants. The script that creates this new csv document with only restaurant reviews can be run using the following command:
 
-`python3 restaurant_review_script.py`
+`python3 [restaurant_review_script.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/restaurant_review_script.py)`
+
+After doing this, analyzed the data further to decide how to distill it to create our training and test sets. For more details, please refer to the file
 
 ### yelp_reviews_test[number].csv
 
@@ -32,6 +34,10 @@ This is a test dataset with *number* entries. We make sure that the distribution
 This is a test dataset with *number* entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews. The content of the train datasets and the test datasets are the same in structure, but we ensure that any pair of train, test files are mutually exclusive. To create a pair  of mutually train and test files, run:
 
 `python3 create_data_script.py --train_size=[TRAIN_SIZE] --test_size=[TEST_SIZE]`
+
+## Model
+
+For this project, we use BERT. More information about this can be found on the Github, or their paper.
 
 ## Training
 
