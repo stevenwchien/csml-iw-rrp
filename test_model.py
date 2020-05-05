@@ -12,6 +12,19 @@ import argparse
 import time
 import sys
 
+# helper method to create a confusion matrix using pandas crosstab method
+def confusion_matrix(preds, labels):
+    pred_labels = preds.astype(int) + 1
+    actual_labels = labels.astype(int) + 1
+    both = np.stack((pred_labels, actual_labels), axis=-1)
+    labels_df = pd.DataFrame(data=both, columns=['predicted', 'actual'])
+
+    return pd.crosstab(labels_df['predicted'], labels_df['actual'], rownames=['Predicted'], colnames=['Actual'])
+
+# helper method to print the mean average distance
+def mean_abs_dist(preds, labels):
+    return np.sum(np.abs(preds-labels)) / len(labels)
+
 def main():
     parser = argparse.ArgumentParser(description='argument parsing for testing')
 
@@ -105,22 +118,19 @@ def main():
     print("==========================================")
     print("Testing - Split {0:d} examples into {1:d} batches".format(TEST_SIZE, len(test_dataloader)))
     test_loss, test_acc, pred_labels, actual_labels = evaluate(model, device, test_dataloader, TEST_SIZE)
+    mad = mean_abs_dist(pred_labels, actual_labels)
+    conf_matrix = confusion_matrix(pred_labels, actual_labels)
     print("")
     print("==========================================")
     print("---------------TEST RESULTS---------------")
     print("==========================================")
     print("")
     print("Testing accuracy: ", test_acc)
+    print("Mean absolute distance: ", mad)
     print("")
     print("-------------CONFUSION MATRIX-------------")
     print("")
-    # use another score, like F1 or confusion
-
-    pred_labels = pred_labels.astype(int) + 1
-    actual_labels = actual_labels.astype(int) + 1
-    labels = np.stack((pred_labels, actual_labels), axis=-1)
-    labels_df = pd.DataFrame(data=labels, columns=['predicted', 'actual'])
-    print(pd.crosstab(labels_df['predicted'], labels_df['actual'], rownames=['Predicted'], colnames=['Actual']))
+    print(conf_matrix)
 
 if __name__ == '__main__':
     main()
