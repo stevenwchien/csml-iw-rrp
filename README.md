@@ -31,7 +31,7 @@ This is a test dataset with **number** entries. We make sure that the distributi
 
 ### yelp_reviews_train[number].csv
 
-This is a test dataset with **number** entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews. The content of the train datasets and the test datasets are the same in structure, but we ensure that any pair of train, test files are mutually exclusive. To create a pair  of mutually train and test files, run:
+This is a test dataset with **number** entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews. The content of the train datasets and the test datasets are the same in structure, but we ensure that any pair of train and test files created are mutually exclusive. To create a pair of mutually exclusive train and test files, run:
 
 `python3 create_data_script.py --train_size=[TRAIN_SIZE] --test_size=[TEST_SIZE]`
 
@@ -53,12 +53,12 @@ The training script is [train_model.py](https://github.com/stevenwchien/csml-iw-
 
 The testing script is [test_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/test_model.py) and takes in the following optional arguments:
 - --data_dir: The directory where data is stored (default is 'data')
-- --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_train5000.csv')
+- --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_test1000.csv')
 - --batch_size: The size of batches to use (default is 32)
 - --model_save: The directory from which to pull the saved model
 
 ## Logging
 
-Running **train_model.py** and **test_model.py** will print to both stdout and to a log file. The file name will indicate whether the run is for training the model or testing the model. The information in the training file will include elapsed run time, hyperparameters, and validation loss and accuracy.
+Running **train_model.py** and **test_model.py** will print to both stdout and to a log file. The file name will indicate whether the run is for training the model or testing the model. The file name will also include the date and time that the run was started. The information in the training log file will include elapsed run time at several points in the running process, hyperparameters, and validation loss and accuracy.
 
-The testing file will include elapsed time and various measures of accuracy, including just straight up accuracy, mean absolute distance, and confusion matrix.
+The testing file will include elapsed time and various measures of testing accuracy, including just straight up accuracy, mean absolute distance, and confusion matrix.
