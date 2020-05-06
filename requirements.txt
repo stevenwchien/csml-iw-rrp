@@ -1,6 +1,6 @@
-numpy
-pandas
-torch
-transformers
-tqdm
-tabulate
+numpy==1.18.3
+pandas==1.0.3
+torch==1.5.0
+transformers==2.8.0
+tqdm==4.46.0
+tabulate==0.8.7
