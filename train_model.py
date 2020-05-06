@@ -267,7 +267,7 @@ def main():
 
 
     print("==========================================")
-    print("-------------Finished training------------")
+    print("------------Summary of Training-----------")
     print("==========================================")
     print("")
     total_elapsed_time = time.perf_counter() - start_train_time
@@ -276,6 +276,12 @@ def main():
     print("")
     print(tabulate(np.stack((train_losses, val_losses, val_accs),axis=-1), ["train_loss", "val_loss", "val_acc"]))
     print("")
+    print("Data directory: {0:s}".format(clargs.data_dir))
+    print("Reviews file: {0:s}".format(clargs.review_file))
+    print("Batch size of {0:d}".format(clargs.batch_size))
+    print("Train ratio of {0:0.2f}".format(clargs.train_ratio))
+    print("Train for {0:d} epochs".format(clargs.epochs))
+    print("")
 
     # save model
     output_dir = clargs.model_save
@@ -283,6 +289,18 @@ def main():
     # Create output directory if needed
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    # save hyperparameters for testing:
+    hyper_json = {
+        "dataDirectory": clargs.data_dir,
+        "dataFile": clargs.review_file,
+        "batchSize": str(clargs.batch_size),
+        "trainRatio": str(clargs.train_ratio),
+        "numEpochs": str(clargs.epochs)
+    }
+    json_outfile = output_dir + '/' + 'hyperparams.json'
+    with open(json_outfile, 'w') as outfile:
+        json.dump(hyper_json, outfile)
 
     print("Saving model to %s" % output_dir)
     model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training

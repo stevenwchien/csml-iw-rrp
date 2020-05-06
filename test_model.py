@@ -110,6 +110,11 @@ def main():
     batch_size = clargs.batch_size,
     drop_last = False)
 
+    # load hyperparameters of the model
+    json_infile = model_path + '/' + 'hyperparams.json'
+    with open(json_infile, 'r') as infile:
+        hyper_json = json.load(infile)
+
     # test the model against some test data
     print("")
     print("==========================================")
@@ -123,6 +128,13 @@ def main():
     print("==========================================")
     print("---------------TEST RESULTS---------------")
     print("==========================================")
+    print("")
+    print("-----------TRAINING HYPERPARAMS-----------")
+    print("Data directory: {0:s}".format(hyper_json['dataDirectory']))
+    print("Reviews file: {0:s}".format(hyper_json['dataFile']))
+    print("Batch size of {0:d}".format(hyper_json['batchSize']))
+    print("Train ratio of {0:0.2f}".format(hyper_json['trainRatio']))
+    print("Train for {0:d} epochs".format(hyper_json['numEpochs']))
     print("")
     print("Testing accuracy: ", test_acc)
     print("Mean absolute distance: ", mad)
