@@ -11,6 +11,7 @@ from data_util import extract_features
 import argparse
 import time
 import sys
+import json
 
 # helper method to create a confusion matrix using pandas crosstab method
 def confusion_matrix(preds, labels):

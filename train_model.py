@@ -14,6 +14,7 @@ import time
 import argparse
 import os
 import sys
+import json
 
 #======================= TRAIN METHOD =======================#
 def train(model, device, train_dataloader, optimizer, scheduler):
