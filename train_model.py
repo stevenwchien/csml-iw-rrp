@@ -182,7 +182,7 @@ def main():
     reviews_df = pd.read_csv(filename)
     reviews_df = reviews_df[['text', 'stars']]
     elapsed = time.perf_counter() - t0
-    print("Finished reading {0:d} entries | Took {1:0.2f} seconds".format(len(reviews_df), elapsed))
+    print("Finished reading {0:d} entries | Took {1:0.2f} seconds".format(len(reviews_df.index), elapsed))
 
     # create tokenizer and model from transformers
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')

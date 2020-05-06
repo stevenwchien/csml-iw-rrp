@@ -6,7 +6,7 @@ from torch.utils.data import SequentialSampler, DataLoader
 from logger import Logger
 
 from train_model import evaluate
-from data_util import generate_dataframe, extract_features
+from data_util import extract_features
 
 import argparse
 import time
@@ -33,8 +33,8 @@ def main():
     type=str,
     help='path to data directory - default: \'data\'')
 
-    parser.add_argument('--review',
-    default='yelp_reviews_test.json',
+    parser.add_argument('--review_file',
+    default='yelp_reviews_test1000.csv',
     type=str,
     help='file name containig reviews')
 
@@ -42,11 +42,6 @@ def main():
     default=32,
     type=int,
     help='batch size - default: 32')
-
-    parser.add_argument('--test_size',
-    default=1000,
-    type=int,
-    help='test set size - default: 1000')
 
     parser.add_argument('--model_save',
     default='./model_save/',
@@ -64,30 +59,27 @@ def main():
     print("-------------Confirm Arguments------------")
     print("==========================================")
 
-    print("Batch size of {0:d}".format(clargs.batch_size))
-    print("Dataset size of {0:d}".format(clargs.test_size))
     print("Data directory for test data: {0:s}".format(clargs.data_dir))
-    print("Test reviews file: {0:s}".format(clargs.review))
+    print("Test reviews file: {0:s}".format(clargs.review_file))
+    print("Batch size of {0:d}".format(clargs.batch_size))
     print("Loading model from: {0:s}".format(clargs.model_save))
 
-    # TODO: should generate some files that are equal size, so we can standardize the results
-    # generate some test data
     print("")
     print("==========================================")
     print("---------------Generate Data--------------")
     print("==========================================")
-    TEST_SIZE = clargs.test_size
-    BATCH_SIZE = clargs.batch_size
-    path = clargs.data_dir
-    fn = clargs.review # remember you must include json
-    filename = path + "/" + fn
-    json_reader = pd.read_json(filename, lines=True, chunksize=clargs.batch_size)
 
-    print("Generating dataset of size {0:d}".format(TEST_SIZE))
+    path = clargs.data_dir
+    fn = clargs.review_file
+    filename = path + "/" + fn
+
     t0 = time.perf_counter()
-    test_df = generate_dataframe(json_reader, nrows=TEST_SIZE)
+    print("Reading in training data from {0:s}".format(clargs.review_file))
+    reviews_df = pd.read_csv(filename)
+    reviews_df = reviews_df[['text', 'stars']]
+    TEST_SIZE = len(reviews_df.index)
     elapsed = time.perf_counter() - t0
-    print("Generated a dataset of size {0:d} | Took {1:0.2f} seconds".format(len(test_df), elapsed))
+    print("Finished reading {0:d} entries | Took {1:0.2f} seconds".format(TEST_SIZE, elapsed))
 
     # load the model from save
     print("")
@@ -104,11 +96,11 @@ def main():
     model.eval()
 
     print("Tokenizing the data to be tested")
-    dataset = extract_features(test_df, tokenizer)
+    dataset = extract_features(reviews_df, tokenizer)
     test_dataloader = DataLoader(
     dataset,
     sampler = SequentialSampler(dataset),
-    batch_size = BATCH_SIZE,
+    batch_size = clargs.batch_size,
     drop_last = False)
 
     # test the model against some test data

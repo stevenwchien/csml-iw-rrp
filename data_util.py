@@ -43,7 +43,7 @@ def extract_features(df, tokenizer):
 
     # we have to subtract 1 here to turn the star ratings into class labels
     labels_array = df['stars'].to_numpy() - 1
-    labels = torch.tensor(labels_array)
+    labels = torch.tensor(labels_array, dtype=torch.long)
 
     # return a TensorDataset
     dataset = TensorDataset(input_ids, attention_masks, labels)
