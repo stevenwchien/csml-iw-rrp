@@ -7,17 +7,17 @@ The dependencies for this project are listed in requirements.txt, and can be ins
 
 `pip3 install -r requirements.txt`
 
-Development was done on a MAC OSX. However, testing was done on a Linux OS - Ubuntu LTS 16.04. This was running as a VM on a Google Cloud Compute instance with a Tesla K80 GPU attached.
-
 Note: The code was tested with the following python/package versions:
 
-- python 3.7.0+
+- [python](https://www.python.org/) 3.7.0+
 - [numpy](https://numpy.org/doc/) 1.18.3
 - [pandas](https://pandas.pydata.org/docs/) 1.0.3
 - [torch](https://github.com/pytorch/pytorch) 1.5.0
 - [transformers](https://github.com/huggingface/transformers) 2.8.0
 - [tqdm](https://github.com/tqdm/tqdm) 4.46.0
 - [tabulate](https://pypi.org/project/tabulate/) 0.8.7
+
+Development was done on a MAC OSX. However all model training and testing were done on Ubuntu 16.04 LTS. This was running as a VM on a Google Cloud Compute instance (n1-standard-2 (2 vCPUs, 7.5 GB memory)) with a Tesla K80 GPU attached. The above dependencies/versions do work for both operating systems, but python 3.7 had to be specifically installed onto the VM.
 
 ## Data
 
@@ -41,7 +41,7 @@ This is a test dataset with **number** entries. We make sure that the distributi
 
 ## Model
 
-For this project, we use [BERT](https://github.com/google-research/bert) from Google Research. More information about the model can be found in their [paper](https://arxiv.org/abs/1810.04805). Essentially, BERT allows us to take advantage of pre-trained models, and simply by adding a single layer, we can fine-tune the model to our desired task. BERT has been shown to be extremely effective in a multitude of sequence processing tasks. To use BERT, we use the [transformers](https://github.com/huggingface/transformers) library, which gives us access to a host of pre-trained models, including BERT.
+For this project, we use [BERT](https://github.com/google-research/bert) from Google Research. More information about the model can be found in their [paper](https://arxiv.org/abs/1810.04805). Essentially, BERT allows us to take advantage of pre-trained models, and simply by adding a single layer, we can fine-tune the model to our desired task. BERT has been shown to be extremely effective in a multitude of sequence processing tasks. To use BERT, we use the [transformers](https://github.com/huggingface/transformers) library, which gives us access to a host of pre-trained models, one of which is BERT. The transformers library also goes the extra step of including pre-implemented 
 
 ## Training
 
