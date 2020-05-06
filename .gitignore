@@ -130,7 +130,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#
+# script
+job.sh
 
 # data/model/logs
 data/
