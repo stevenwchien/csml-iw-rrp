@@ -59,7 +59,7 @@ def main():
     if clargs.nolog:
         print("Not logging")
     else:
-        sys.stdout = Logger('train')
+        sys.stdout = Logger('test')
 
     print("")
     print("==========================================")
