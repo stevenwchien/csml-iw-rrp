@@ -135,11 +135,18 @@ def main():
     type=str,
     help='directory to save model')
 
+    parser.add_argument('--nolog',
+    action='store_true',
+    help='disable logging')
+
     # parse input arguments
     clargs = parser.parse_args()
 
     # log to file and stdout
-    sys.stdout = Logger('train')
+    if clargs.nolog:
+        print("Not logging")
+    else:
+        sys.stdout = Logger('train')
 
     print("")
     print("==========================================")
