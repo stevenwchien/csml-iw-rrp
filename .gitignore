@@ -136,6 +136,8 @@ dmypy.json
 # data/model/logs
 data/
 model_save*/
+best_model/
+temp_model/
 logs/
 
 # my scratch files
