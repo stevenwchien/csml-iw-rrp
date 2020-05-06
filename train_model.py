@@ -205,26 +205,17 @@ def main():
     TRAIN_SIZE = int(len(reviews_df.index) * clargs.train_ratio)
     VAL_SIZE = len(reviews_df.index) - TRAIN_SIZE
     BATCH_SIZE = clargs.batch_size
-    train_dataloader, validation_dataloader = train_val_split(dataset=dataset,
-                                                              batch_sz=BATCH_SIZE,
-                                                              lengths=[TRAIN_SIZE, VAL_SIZE])
+    train_dataloader, validation_dataloader = train_val_split(dataset=dataset, batch_sz=BATCH_SIZE, lengths=[TRAIN_SIZE, VAL_SIZE])
 
     print("Training - Split {0:d} examples into {1:d} batches".format(TRAIN_SIZE, len(train_dataloader)))
     print("Validation - Split {0:d} examples into {1:d} batches".format(VAL_SIZE, len(validation_dataloader)))
     print("Finished splitting")
 
     # load a pre-trained model
-    model = BertForSequenceClassification.from_pretrained('bert-base-uncased',
-                                                          num_labels = 5,
-                                                          output_attentions = False,
-                                                          output_hidden_states = False)
+    model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels = 5, output_attentions = False, output_hidden_states = False)
     if CUDA_FLAG:
         model.cuda()
-
-    optimizer = AdamW(model.parameters(),
-                  lr = 2e-5, # args.learning_rate - default is 5e-5,
-                  eps = 1e-8 # args.adam_epsilon  - default is 1e-8.
-                )
+    optimizer = AdamW(model.parameters(), lr = 2e-5, eps = 1e-8)
 
     # Total number of training steps is [number of batches] x [number of epochs].
     # (Note that this is not the same as the number of training samples).

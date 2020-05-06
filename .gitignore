@@ -138,7 +138,6 @@ model_save/
 logs/
 
 # my scratch files
-*.ipynb
 unit_test.py
 testing.py
 split_data_script.py

@@ -5,19 +5,6 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch.utils.data import RandomSampler, SequentialSampler, random_split
 import torch
 
-# # Custom Dataset class to handle reviews
-# class ReviewDataset(data.Dataset):
-#     def __init__(self, train_ratio, file_path):
-#         self.review_df = pd.read_csv(file_path, index_col='review_id')
-#         self.labels =
-#         self.review_ids =
-#         return
-#     def __len__(self):
-#         return
-#
-#     def __getitem__(self, index):
-#         return self.review_df.loc['']
-
 # extract tokenized versions of the text
 def extract_features(df, tokenizer):
     input_ids = []
