@@ -61,6 +61,6 @@ The testing script is [test_model.py](https://github.com/stevenwchien/csml-iw-rr
 
 ## Logging
 
-Running **train_model.py** and **test_model.py** will print to both stdout and to a log file. The file name will indicate whether the run is for training the model or testing the model. The file name will also include the date and time that the run was started. The information in the training log file will include elapsed run time at several points in the running process, hyperparameters, and validation loss and accuracy.
+Running [train_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/train_model.py) and [test_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/test_model.py) will print to both stdout and to a log file. The file name will indicate whether the run is for training the model or testing the model. The file name will also include the date and time that the run was started. The information in the training log file will include elapsed run time at several points in the running process, hyperparameters, and validation loss and accuracy.
 
 The testing file will include elapsed time and various measures of testing accuracy, including just straight up accuracy, mean absolute distance, and confusion matrix.

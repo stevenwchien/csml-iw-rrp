@@ -25,7 +25,7 @@ def train(model, device, train_dataloader, optimizer, scheduler):
         if step % 10 == 0 and not step == 0:
             elapsed = time.perf_counter() - t0
             m,s = divmod(elapsed, 60)
-            print('  Batch {0:4d}  of  {1:4d}. Epoch elapsed: {2:02d}:{3:02.2f}'.format(step, len(train_dataloader), int(m), s))
+            print('  Batch {0:4d}  of  {1:4d}. Epoch elapsed: {2:02d}:{3:05.2f}'.format(step, len(train_dataloader), int(m), s))
 
         # As we unpack the batch, move to gpu
         b_input_ids = batch[0].to(device)
@@ -271,7 +271,7 @@ def main():
 
         elapsed_time = time.perf_counter() - start_train_time
         m, s = divmod(elapsed_time, 60)
-        print("End epoch {0:d} - Time so far - {1:02d}:{2:02.2f}".format((i+1), int(m), s))
+        print("End epoch {0:d} - Time so far - {1:02d}:{2:05.2f}".format((i+1), int(m), s))
         print("")
 
 
@@ -281,7 +281,7 @@ def main():
     print("")
     total_elapsed_time = time.perf_counter() - start_train_time
     m, s = divmod(total_elapsed_time, 60)
-    print("Total training time: {0:02d}:{1:02.2f}".format(int(m), s))
+    print("Total training time: {0:02d}:{1:05.2f}".format(int(m), s))
     print("")
     print(tabulate(np.stack((train_losses, val_losses, val_accs),axis=-1), ["train_loss", "val_loss", "val_acc"]))
     print("")
