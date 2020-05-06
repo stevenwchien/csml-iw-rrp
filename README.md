@@ -23,7 +23,7 @@ Because the dataset is extremely large, we decided to create our own smaller dat
 
 `python3 restaurant_review_script.py`
 
-After doing this, analyzed the data further to decide how to distill it to create our training and test sets. For more details, please refer to the file
+After creating the csv file, we further analyzed the data to decide how to distill it to create our training and test sets. For more details, please refer to the Jupyter notebook: **data_analysis.ipynb**.
 
 ### yelp_reviews_test[number].csv
 
