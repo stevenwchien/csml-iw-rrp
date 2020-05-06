@@ -3,7 +3,11 @@ A project for the CSML Independent Work requirement
 
 ## Dependencies
 
-The dependencies for this project are listed in requirements.txt. Development was done on a MAC OSX. However, testing was done on a Linux OS - Ubuntu LTS 16.04. This was running as a VM on a Google Cloud Compute instance with a Tesla K80 GPU attached.
+The dependencies for this project are listed in requirements.txt, and can be installed in a python virtual environment using:
+
+`pip3 install -r requirements.txt`
+
+Development was done on a MAC OSX. However, testing was done on a Linux OS - Ubuntu LTS 16.04. This was running as a VM on a Google Cloud Compute instance with a Tesla K80 GPU attached.
 
 Note: The code was tested with the following python/package versions:
 
