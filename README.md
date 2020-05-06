@@ -17,7 +17,7 @@ Note: The code was tested with the following python/package versions:
 
 ## Data
 
-This project makes use of datasets that are derived from the Yelp Open Dataset. Information about the Yelp Open Dataset can be found at: https://www.yelp.com/dataset. Because both the Yelp Dataset and are derived dataset are relatively large, we do not include them in this repository. Instead, we include the scripts that were used to create them. All that is needed to run these scripts are the datasets downloaded from Yelp's website with their generic names.
+This project makes use of datasets that are derived from the Yelp Open Dataset. Information about the Yelp Open Dataset can be found at: https://www.yelp.com/dataset. Because both the Yelp Dataset and are derived dataset are relatively large, we do not include them in this repository. Instead, we include the scripts that were used to create them. All that is needed to run these scripts are the datasets downloaded from Yelp's website with their generic names. For the scripts to work with their default options, create a folder called 'data' and store the files there.
 
 Because the dataset is extremely large, we decided to create our own smaller datasets from the larger one. For our project, the most useful dataset to us is the reviews dataset: **yelp_academic_dataset_review.json**. To begin with our processing, we combine this data with the file: **yelp_academic_dataset_business.json** in order to extract just the reviews about restaurants. The script that creates this new csv document with only restaurant reviews is [restaurant_review_script.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/restaurant_review_script.py). Run using:
 
@@ -43,11 +43,12 @@ For this project, we use BERT. More information about this can be found on the G
 
 The training script is [train_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/train_model.py) and takes in the following optional arguments:
 - --data_dir: The directory where data is stored (default is 'data')
-- --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_train5000.csv') 
+- --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_train5000.csv')
 - --batch_size: The size of batches to use (default is 32)
 - --train_ratio: The ratio of examples to use for training (default is 0.85)
 - --epochs: The number of epochs to run (default is set to 4)
 - --model_save: The directory to save the model after training (default is ./model_save)
+- --nolog: Option to disable logging, which is on by default
 
 ## Testing
 
@@ -56,6 +57,7 @@ The testing script is [test_model.py](https://github.com/stevenwchien/csml-iw-rr
 - --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_test1000.csv')
 - --batch_size: The size of batches to use (default is 32)
 - --model_save: The directory from which to pull the saved model
+- --nolog: Option to disable logging, which is on by default
 
 ## Logging
 
