@@ -130,12 +130,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# script
-job.sh
+# scripts
+*.sh
 
 # data/model/logs
 data/
-model_save/
+model_save*/
 logs/
 
 # my scratch files
