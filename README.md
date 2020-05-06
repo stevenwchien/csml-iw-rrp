@@ -9,7 +9,7 @@ Note: The code was tested with the following python/package versions:
 
 - python 3.7.0+
 - [numpy](https://numpy.org/doc/) 1.18.3
-- [pandas][https://pandas.pydata.org/docs/] 1.0.3
+- [pandas](https://pandas.pydata.org/docs/) 1.0.3
 - [torch](https://github.com/pytorch/pytorch) 1.5.0
 - [transformers](https://github.com/huggingface/transformers) 2.8.0
 - [tqdm](https://github.com/tqdm/tqdm) 4.46.0
@@ -41,10 +41,21 @@ For this project, we use BERT. More information about this can be found on the G
 
 ## Training
 
-The training script takes in the following optional arguments:
-- --data_dir: 
+The training script is [train_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/train_model.py) and takes in the following optional arguments:
+- --data_dir: The directory where data is stored (default is 'data')
+- --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_train5000.csv') 
+- --batch_size: The size of batches to use (default is 32)
+- --train_ratio: The ratio of examples to use for training (default is 0.85)
+- --epochs: The number of epochs to run (default is set to 4)
+- --model_save: The directory to save the model after training (default is ./model_save)
 
 ## Testing
+
+The testing script is [test_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/test_model.py) and takes in the following optional arguments:
+- --data_dir: The directory where data is stored (default is 'data')
+- --review_file: The file to find the cleaned reviews (default uses 'yelp_reviews_train5000.csv')
+- --batch_size: The size of batches to use (default is 32)
+- --model_save: The directory from which to pull the saved model
 
 ## Logging
 
