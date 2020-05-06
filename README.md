@@ -8,12 +8,12 @@ The dependencies for this project are listed in requirements.txt. Development wa
 Note: The code was tested with the following python/package versions:
 
 - python 3.7.0+
-- numpy 1.18.3
-- pandas 1.0.3
+- [numpy](https://numpy.org/doc/) 1.18.3
+- [pandas][https://pandas.pydata.org/docs/] 1.0.3
 - [torch](https://github.com/pytorch/pytorch) 1.5.0
 - [transformers](https://github.com/huggingface/transformers) 2.8.0
-- tqdm 4.46.0
-- tabulate 0.8.7
+- [tqdm](https://github.com/tqdm/tqdm) 4.46.0
+- [tabulate](https://pypi.org/project/tabulate/) 0.8.7
 
 ## Data
 
@@ -27,11 +27,11 @@ After doing this, analyzed the data further to decide how to distill it to creat
 
 ### yelp_reviews_test[number].csv
 
-This is a test dataset with *number* entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews.
+This is a test dataset with **number** entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews.
 
 ### yelp_reviews_train[number].csv
 
-This is a test dataset with *number* entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews. The content of the train datasets and the test datasets are the same in structure, but we ensure that any pair of train, test files are mutually exclusive. To create a pair  of mutually train and test files, run:
+This is a test dataset with **number** entries. We make sure that the distribution of star ratings is equal. So, if there are 1000 entries, then there will be 200 1-star reviews. The content of the train datasets and the test datasets are the same in structure, but we ensure that any pair of train, test files are mutually exclusive. To create a pair  of mutually train and test files, run:
 
 `python3 create_data_script.py --train_size=[TRAIN_SIZE] --test_size=[TEST_SIZE]`
 
@@ -40,6 +40,9 @@ This is a test dataset with *number* entries. We make sure that the distribution
 For this project, we use BERT. More information about this can be found on the Github, or their paper.
 
 ## Training
+
+The training script takes in the following optional arguments:
+- --data_dir: 
 
 ## Testing
 
