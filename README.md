@@ -1,4 +1,4 @@
-# csml-iw-rrp
+# Using BERT for Review Rating Prediction on the Yelp Open Dataset
 A project for the CSML Independent Work requirement
 
 ## Dependencies

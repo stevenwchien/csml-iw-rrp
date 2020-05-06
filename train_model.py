@@ -8,7 +8,7 @@ from logger import Logger
 from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
 from transformers import AdamW, get_linear_schedule_with_warmup
 
-from data_util import generate_dataframe, extract_features, train_val_split
+from data_util import extract_features, train_val_split
 
 import time
 import argparse
@@ -110,8 +110,8 @@ def main():
     type=str,
     help='path to data directory - default: \'data\'')
 
-    parser.add_argument('--review',
-    default='yelp_reviews_train.json',
+    parser.add_argument('--review_file',
+    default='yelp_reviews_train5000.csv',
     type=str,
     help='file name containig reviews')
 
@@ -119,11 +119,6 @@ def main():
     default=32,
     type=int,
     help='batch size - default: 32')
-
-    parser.add_argument('--dataset_size',
-    default=10000,
-    type=int,
-    help='train size - default: 10000')
 
     parser.add_argument('--train_ratio',
     default=0.85,
@@ -152,12 +147,11 @@ def main():
     print("==========================================")
     print("")
 
+    print("Data directory: {0:s}".format(clargs.data_dir))
+    print("Reviews file: {0:s}".format(clargs.review_file))
     print("Batch size of {0:d}".format(clargs.batch_size))
-    print("Dataset size of {0:d}".format(clargs.dataset_size))
     print("Train ratio of {0:0.2f}".format(clargs.train_ratio))
     print("Train for {0:d} epochs".format(clargs.epochs))
-    print("Data directory: {0:s}".format(clargs.data_dir))
-    print("Reviews file: {0:s}".format(clargs.review))
     print("Will save model in: {0:s}".format(clargs.model_save))
 
     # Check to see if GPU is available
@@ -178,43 +172,39 @@ def main():
     print("==========================================")
     print("")
 
-    t0 = time.perf_counter()
-
-    TRAIN_SIZE = int(clargs.dataset_size * clargs.train_ratio)
-    VAL_SIZE = clargs.dataset_size - TRAIN_SIZE
-    BATCH_SIZE = clargs.batch_size
     path = clargs.data_dir
-    fn = clargs.review # remember you must include json
+    fn = clargs.review_file
     filename = path + "/" + fn
-    json_reader = pd.read_json(filename, lines=True, chunksize=clargs.batch_size)
 
     # read in data from review dataset
-    print("Generating dataset of size: {0:d}".format(clargs.dataset_size))
-    data_df = generate_dataframe(json_reader, nrows=clargs.dataset_size)
+    t0 = time.perf_counter()
+    print("Reading in training data from {0:s}".format(clargs.review_file))
+    reviews_df = pd.read_csv(filename)
+    reviews_df = reviews_df[['text', 'stars']]
     elapsed = time.perf_counter() - t0
-    print("Generated a dataset of size: {0:d} | Took {1:0.2f} seconds".format(len(data_df), elapsed))
-
-    t1 = time.perf_counter()
+    print("Finished reading {0:d} entries | Took {1:0.2f} seconds".format(len(reviews_df), elapsed))
 
     # create tokenizer and model from transformers
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     # tokenize the data into something that BERT can use, then split
     print("Tokenizing and encoding data to be fed into BERT model")
-    dataset = extract_features(data_df, tokenizer)
+    t1 = time.perf_counter()
+    dataset = extract_features(reviews_df, tokenizer)
     elapsed = time.perf_counter() - t1
     print("Finished tokenizing | Took {0:0.2f} seconds".format(elapsed))
 
-    t2 = time.perf_counter()
-
+    # split the data into training and validation set
+    TRAIN_SIZE = int(len(reviews_df.index) * clargs.train_ratio)
+    VAL_SIZE = len(reviews_df.index) - TRAIN_SIZE
+    BATCH_SIZE = clargs.batch_size
     train_dataloader, validation_dataloader = train_val_split(dataset=dataset,
                                                               batch_sz=BATCH_SIZE,
                                                               lengths=[TRAIN_SIZE, VAL_SIZE])
 
-    elapsed = time.perf_counter() - t2
     print("Training - Split {0:d} examples into {1:d} batches".format(TRAIN_SIZE, len(train_dataloader)))
     print("Validation - Split {0:d} examples into {1:d} batches".format(VAL_SIZE, len(validation_dataloader)))
-    print("Finished splitting | Took {0:0.2f} seconds".format(elapsed))
+    print("Finished splitting")
 
     # load a pre-trained model
     model = BertForSequenceClassification.from_pretrained('bert-base-uncased',

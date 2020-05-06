@@ -5,24 +5,18 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch.utils.data import RandomSampler, SequentialSampler, random_split
 import torch
 
-# generates a dataframe with reviews under a certain length
-def generate_dataframe(json_reader, nrows, max_length = 120):
-    df = None
-    while True:
-        df_candidate = next(json_reader)
-        df_candidate = df_candidate.loc[df_candidate['text'].str.split().str.len() <= max_length, ['review_id','text','stars']]
-        if df is None:
-            df = df_candidate
-        else:
-            df = df.append(df_candidate)
-            for rating in range(1, 6, 1):
-                df_rating = df[df['stars'] == rating]
-                if len(df_rating) > nrows//5:
-                    df_rating = df_rating.iloc[:nrows//5, :]
-                    df = df.loc[~(df['stars'] == rating), :]
-                    df = df.append(df_rating)
-                    if len(df) == nrows:
-                        return df
+# # Custom Dataset class to handle reviews
+# class ReviewDataset(data.Dataset):
+#     def __init__(self, train_ratio, file_path):
+#         self.review_df = pd.read_csv(file_path, index_col='review_id')
+#         self.labels =
+#         self.review_ids =
+#         return
+#     def __len__(self):
+#         return
+#
+#     def __getitem__(self, index):
+#         return self.review_df.loc['']
 
 # extract tokenized versions of the text
 def extract_features(df, tokenizer):
