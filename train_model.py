@@ -132,7 +132,7 @@ def main():
     help='number of training epochs - default: 4')
 
     parser.add_argument('--model_save',
-    default='./model_save/',
+    default='./model_save',
     type=str,
     help='directory to save model')
 

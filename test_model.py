@@ -45,7 +45,7 @@ def main():
     help='batch size - default: 32')
 
     parser.add_argument('--model_save',
-    default='./model_save/',
+    default='./model_save',
     type=str,
     help='directory to pull model')
 
