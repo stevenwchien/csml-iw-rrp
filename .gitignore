@@ -144,3 +144,6 @@ logs/
 unit_test.py
 testing.py
 split_data_script.py
+
+# temp files
+*~
