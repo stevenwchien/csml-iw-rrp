@@ -2,6 +2,7 @@ from transformers import BertForSequenceClassification, BertTokenizer
 import torch
 import numpy as np
 import pandas as pd
+from sklearn import metrics
 from torch.utils.data import SequentialSampler, DataLoader
 from logger import Logger
 
@@ -143,6 +144,9 @@ def main():
     print("-------------CONFUSION MATRIX-------------")
     print("")
     print(conf_matrix)
+    print("")
+    target_names = ['1 star', '2 star', '3 star', '4 star', '5 star']
+    print(metrics.classification_report(actual_labels, pred_labels, target_names=target_names))
 
 if __name__ == '__main__':
     main()
