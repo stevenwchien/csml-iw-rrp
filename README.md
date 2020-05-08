@@ -17,7 +17,7 @@ Note: The code was tested with the following python/package versions:
 - [tqdm](https://github.com/tqdm/tqdm) 4.46.0
 - [tabulate](https://pypi.org/project/tabulate/) 0.8.7
 
-Development was done on a MAC OSX. However all model training and testing were done on Ubuntu 16.04 LTS. This was running as a VM on a Google Cloud Compute instance (n1-standard-2 (2 vCPUs, 7.5 GB memory)) with a Tesla K80 GPU attached. The above dependencies/versions do work for both operating systems, but python 3.7 had to be specifically installed onto the VM.
+Development was done on a MAC OSX. However all model training and testing were done on Ubuntu 16.04 LTS. This was running as a VM on a Google Cloud Compute instance (n1-standard-2 (2 vCPUs, 7.5 GB memory)) with a Tesla K80 GPU attached. The above dependencies/versions do work for both operating systems, but python 3.7 had to be specifically installed onto the VM. Both the training and testing script should work without modification on either a CPU and a GPU. They are set up to automatically detect and use a GPU if one is available.
 
 ## Data
 
