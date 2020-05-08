@@ -54,7 +54,7 @@ The training script is [train_model.py](https://github.com/stevenwchien/csml-iw-
 - --model_save: The directory to save the model after training (default is ./model_save)
 - --nolog: Option to disable logging, which is on by default
 
-Once training is done, the model is automatically saved into the directory provided either as an optional argument, or the default *model_save* directory. The training script also automatically saves the hyperparameters used in the training run.
+We separate our training dataset into batches using a random sampler in an attempt to remove any symmetry associated with the dataset. Once training is done, the model is automatically saved into the directory provided either as an optional argument, or the default *model_save* directory. The training script also automatically saves the hyperparameters used in the training run.
 
 ## Testing
 
@@ -65,10 +65,10 @@ The testing script is [test_model.py](https://github.com/stevenwchien/csml-iw-rr
 - --model_save: The directory from which to pull the saved model
 - --nolog: Option to disable logging, which is on by default
 
-The testing script is set up to automatically load a model from the same default directory that the training script saves to. The testing script will also load in a summary of the training hyperparameters.
+The testing script is set up to automatically load a model from the same default directory that the training script saves to. The testing script will also load in a summary of the training hyperparameters. During evaluation, we sequentially sample from the test dataset because the order in which we feed the data into the model does not matter.
 
 ## Logging
 
 Running [train_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/train_model.py) and [test_model.py](https://github.com/stevenwchien/csml-iw-rrp/blob/master/test_model.py) will, by default, print to both stdout and to a log file. The file name will indicate whether the run is for training the model or testing the model. The file name will also include the date and time that the run was started. The information in the training log file will include elapsed run time at several points in the running process, hyperparameters, and validation loss and accuracy.
 
-The testing file will include elapsed time and various measures of testing accuracy, including just straight up accuracy, mean absolute error, and confusion matrix.
+The testing file will include elapsed time and various measures of testing accuracy, including just straight up accuracy, mean absolute error, and confusion matrix. In addition to this, the testing file will print a summary of the training hyperparameters used to train the model that is being evaluated.
