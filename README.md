@@ -41,7 +41,7 @@ This is a test dataset with **number** entries. We make sure that the distributi
 
 ## Model
 
-For this project, we use [BERT](https://github.com/google-research/bert) from Google Research. More information about the model can be found in their [paper](https://arxiv.org/abs/1810.04805). Essentially, BERT allows us to take advantage of pre-trained models, and simply by adding a single layer, we can fine-tune the model to our desired task. BERT has been shown to be extremely effective in a multitude of sequence processing tasks. To use BERT, we use the [transformers](https://github.com/huggingface/transformers) library, which gives us access to a host of pre-trained models, one of which is BERT. The transformers library also goes the extra step of including pre-implemented 
+For this project, we use [BERT](https://github.com/google-research/bert) from Google Research. More information about the model can be found in their [paper](https://arxiv.org/abs/1810.04805). Essentially, BERT allows us to take advantage of pre-trained models, and simply by adding a single layer, we can fine-tune the model to our desired task. BERT has been shown to be extremely effective in a multitude of sequence processing tasks. To use BERT, we use the [transformers](https://github.com/huggingface/transformers) library, which gives us access to a host of pre-trained models, one of which is BERT. The transformers library also goes the extra step of including pre-implemented task-specific models. For our project, we use `BertForSequenceClassification`.
 
 ## Training
 
