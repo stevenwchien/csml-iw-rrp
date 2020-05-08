@@ -146,7 +146,7 @@ def main():
     print(conf_matrix)
     print("")
     target_names = ['1 star', '2 star', '3 star', '4 star', '5 star']
-    print(metrics.classification_report(actual_labels, pred_labels, target_names=target_names))
+    print(metrics.classification_report(actual_labels, pred_labels, digits=3, target_names=target_names))
 
 if __name__ == '__main__':
     main()
