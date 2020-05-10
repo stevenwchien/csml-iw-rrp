@@ -99,8 +99,17 @@ def main():
 
     print("Loading model and tokenizer from directory")
     model_path = clargs.model_save
-    tokenizer = BertTokenizer.from_pretrained(model_path)
-    model = DistilBertForSequenceClassification.from_pretrained(model_path)
+    json_infile = model_path + '/' + 'hyperparams.json'
+    with open(json_infile, 'r') as infile:
+        hyper_json = json.load(infile)
+
+    if 'model' not in hyper_json or hyper_json['model'] == 'bert':
+        tokenizer = BertTokenizer.from_pretrained(model_path)
+        model = BertForSequenceClassification.from_pretrained(model_path)
+    else:
+        tokenizer = DistilBertTokenizer.from_pretrained(model_path)
+        model = DistilBertForSequenceClassification.from_pretrained(model_path)
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     model.eval()
@@ -113,10 +122,7 @@ def main():
     batch_size = clargs.batch_size,
     drop_last = False)
 
-    # load hyperparameters of the model
-    json_infile = model_path + '/' + 'hyperparams.json'
-    with open(json_infile, 'r') as infile:
-        hyper_json = json.load(infile)
+
 
     # test the model against some test data
     print("")

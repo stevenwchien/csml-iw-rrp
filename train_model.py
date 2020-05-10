@@ -132,6 +132,10 @@ def main():
     type=int,
     help='number of training epochs - default: 4')
 
+    parser.add_argument('--distil',
+    action='store_true',
+    help='use DistilBert instead of BERT')
+
     parser.add_argument('--model_save',
     default='./model_save',
     type=str,
@@ -161,6 +165,7 @@ def main():
     print("Batch size of {0:d}".format(clargs.batch_size))
     print("Train ratio of {0:0.2f}".format(clargs.train_ratio))
     print("Train for {0:d} epochs".format(clargs.epochs))
+    print("Using DistilBert" if clargs.distil else "Using Bert")
     print("Will save model in: {0:s}".format(clargs.model_save))
 
     # Check to see if GPU is available
@@ -194,7 +199,10 @@ def main():
     print("Finished reading {0:d} entries | Took {1:0.2f} seconds".format(len(reviews_df.index), elapsed))
 
     # create tokenizer and model from transformers
-    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+    if clargs.distil:
+        tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+    else:
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     # tokenize the data into something that BERT can use, then split
     print("Tokenizing and encoding data to be fed into BERT model")
@@ -214,7 +222,10 @@ def main():
     print("Finished splitting")
 
     # load a pre-trained model
-    model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels = 5, output_attentions = False, output_hidden_states = False)
+    if clargs.distil:
+        model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels = 5, output_attentions = False, output_hidden_states = False)
+    else:
+        model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels = 5, output_attentions = False, output_hidden_states = False)
     if CUDA_FLAG:
         model.cuda()
     optimizer = AdamW(model.parameters(), lr = 2e-5, eps = 1e-8)
@@ -292,13 +303,15 @@ def main():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    model_type = "distil" if clargs.distil else "bert"
     # save hyperparameters for testing:
     hyper_json = {
         "dataDirectory": clargs.data_dir,
         "dataFile": clargs.review_file,
         "batchSize": str(clargs.batch_size),
         "trainRatio": str(clargs.train_ratio),
-        "numEpochs": str(clargs.epochs)
+        "numEpochs": str(clargs.epochs),
+        "model": model_type
     }
     json_outfile = output_dir + '/' + 'hyperparams.json'
     with open(json_outfile, 'w') as outfile:
