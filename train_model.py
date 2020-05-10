@@ -83,7 +83,7 @@ def evaluate(model, device, dataloader, test_size):
         with torch.no_grad():
 
             # Forward pass, calculate logit predictions.
-            loss, logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)
+            loss, logits = model(b_input_ids, attention_mask=b_input_mask, labels=b_labels)
 
         # Move logits and labels to CPU
         logits = logits.detach().cpu().numpy()
