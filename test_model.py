@@ -1,4 +1,4 @@
-DistilBertTokenizerfrom transformers import BertForSequenceClassification, BertTokenizer
+from transformers import BertForSequenceClassification, BertTokenizer
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 import torch
 import numpy as np
