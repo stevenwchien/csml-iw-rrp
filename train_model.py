@@ -194,7 +194,7 @@ def main():
     print("Finished reading {0:d} entries | Took {1:0.2f} seconds".format(len(reviews_df.index), elapsed))
 
     # create tokenizer and model from transformers
-    tokenizer = DistilBertTokenizer.from_pretrained('bert-base-uncased')
+    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 
     # tokenize the data into something that BERT can use, then split
     print("Tokenizing and encoding data to be fed into BERT model")
@@ -214,7 +214,7 @@ def main():
     print("Finished splitting")
 
     # load a pre-trained model
-    model = DistilBertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels = 5, output_attentions = False, output_hidden_states = False)
+    model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels = 5, output_attentions = False, output_hidden_states = False)
     if CUDA_FLAG:
         model.cuda()
     optimizer = AdamW(model.parameters(), lr = 2e-5, eps = 1e-8)
