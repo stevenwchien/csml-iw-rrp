@@ -38,7 +38,7 @@ def train(model, device, train_dataloader, optimizer, scheduler):
         model.zero_grad()
 
         # Perform a forward pass, then backward pass for gradients
-        loss, logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)
+        loss, logits = model(b_input_ids, attention_mask=b_input_mask, labels=b_labels)
         loss.backward()
 
         # Clip the norm of the gradients to 1.0.
