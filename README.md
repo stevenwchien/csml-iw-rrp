@@ -41,7 +41,7 @@ This is a test dataset with **number** entries. We make sure that the distributi
 
 ## Model
 
-For this project, we use [BERT](https://github.com/google-research/bert) from Google Research. More information about the model can be found in their [paper](https://arxiv.org/abs/1810.04805). Essentially, BERT allows us to take advantage of pre-trained models, and simply by adding a single layer, we can fine-tune the model to our desired task. BERT has been shown to be extremely effective in a multitude of sequence processing tasks. To use BERT, we use the [transformers](https://github.com/huggingface/transformers) library, which gives us access to a host of pre-trained models, one of which is BERT. The transformers library also goes the extra step of including pre-implemented task-specific models. For our project, we use `BertForSequenceClassification`.
+For this project, we use [BERT](https://github.com/google-research/bert) from Google Research. More information about the model can be found in their [paper](https://arxiv.org/abs/1810.04805). Essentially, BERT allows us to take advantage of pre-trained models, and simply by adding a single layer, we can fine-tune the model to our desired task. BERT has been shown to be extremely effective in a multitude of sequence processing tasks. To use BERT, we use the [transformers](https://github.com/huggingface/transformers) library, which gives us access to a host of pre-trained models, one of which is BERT. The transformers library also goes the extra step of including pre-implemented task-specific models. For our project, we use `BertForSequenceClassification`. We also include the option of usng DistilBert instead of Bert in our training and testing scripts. In this case, our code uses `DistilBertForSequenceClassification`.
 
 ## Training
 
@@ -53,6 +53,7 @@ The training script is [train_model.py](https://github.com/stevenwchien/csml-iw-
 - --epochs: The number of epochs to run (default is set to 4)
 - --model_save: The directory to save the model after training (default is ./model_save)
 - --nolog: Option to disable logging, which is on by default
+- --distil: Option to use DistilBert instead of Bert
 
 We separate our training dataset into batches using a random sampler in an attempt to remove any symmetry associated with the dataset. Once training is done, the model is automatically saved into the directory provided either as an optional argument, or the default *model_save* directory. The training script also automatically saves the hyperparameters used in the training run.
 
