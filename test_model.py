@@ -1,4 +1,5 @@
-from transformers import BertForSequenceClassification, BertTokenizer
+DistilBertTokenizerfrom transformers import BertForSequenceClassification, BertTokenizer
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 import torch
 import numpy as np
 import pandas as pd
@@ -99,7 +100,7 @@ def main():
     print("Loading model and tokenizer from directory")
     model_path = clargs.model_save
     tokenizer = BertTokenizer.from_pretrained(model_path)
-    model = BertForSequenceClassification.from_pretrained(model_path)
+    model = DistilBertForSequenceClassification.from_pretrained(model_path)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     model.eval()
