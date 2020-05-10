@@ -24,9 +24,13 @@ def confusion_matrix(preds, labels):
 
     return pd.crosstab(labels_df['predicted'], labels_df['actual'], rownames=['Predicted'], colnames=['Actual'])
 
-# helper method to print the mean average distance
+# helper method to return the mean average distance
 def mean_abs_error(preds, labels):
     return np.sum(np.abs(preds-labels)) / len(labels)
+
+# helper method to return the mean square error
+def mean_square_error(preds, labels):
+    return np.sum(np.abs(preds-labels)**2) / len(labels)
 
 def main():
     parser = argparse.ArgumentParser(description='argument parsing for testing')
@@ -134,6 +138,7 @@ def main():
     print("Testing - Split {0:d} examples into {1:d} batches".format(TEST_SIZE, len(test_dataloader)))
     test_loss, test_acc, pred_labels, actual_labels = evaluate(model, device, test_dataloader, TEST_SIZE)
     mae = mean_abs_error(pred_labels, actual_labels)
+    mse = mean_square_error(pred_labels, actual_labels)
     conf_matrix = confusion_matrix(pred_labels, actual_labels)
     print("")
     print("==========================================")
@@ -149,6 +154,7 @@ def main():
     print("")
     print("Testing accuracy: ", test_acc)
     print("Mean absolute error: ", mae)
+    print("Mean square error: ", mse)
     print("")
     print("-------------CONFUSION MATRIX-------------")
     print("")
