@@ -104,9 +104,11 @@ def main():
         hyper_json = json.load(infile)
 
     if 'model' not in hyper_json or hyper_json['model'] == 'bert':
+        print("Loading normal bert model")
         tokenizer = BertTokenizer.from_pretrained(model_path)
         model = BertForSequenceClassification.from_pretrained(model_path)
     else:
+        print("Loading distilbert Model")
         tokenizer = DistilBertTokenizer.from_pretrained(model_path)
         model = DistilBertForSequenceClassification.from_pretrained(model_path)
 
