@@ -5,7 +5,8 @@ from tqdm import tqdm
 from tabulate import tabulate
 from logger import Logger
 
-from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
+from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 from data_util import extract_features, train_val_split
