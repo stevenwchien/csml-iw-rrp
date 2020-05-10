@@ -139,6 +139,8 @@ model_save*/
 best_model/
 temp_model/
 logs/
+temp*
+*temp
 
 # my scratch files
 unit_test.py
