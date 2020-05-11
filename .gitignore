@@ -137,6 +137,7 @@ dmypy.json
 data/
 model_save*/
 best_model/
+distil_model*/
 temp_model/
 logs/
 temp*
